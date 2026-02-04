@@ -1,0 +1,95 @@
+
+
+
+```{r, include=FALSE}
+library(tidyverse)
+library(broom)
+library(knitr)
+library(modelsummary)
+library(kableExtra)
+library(table1)
+library(readxl)
+
+
+options(knitr.kable.NA = ' ')
+
+demographics <- read_excel('/Users/aregawili/Library/CloudStorage/OneDrive-NationalInstitutesofHealth/Desktop/3-28-25 Catechol and Questionnaire Data .xlsx')
+
+
+
+demographics <- demographics %>%
+   mutate(ID = case_when(
+    Group == 0 ~ "HV",
+    Group == 2 ~ "PD",
+    str_detect(SubjectID, "8900") & Group == 1 ~ "PASC",
+    str_detect(SubjectID, "711") ~ "PASC",
+    str_detect(SubjectID, "8900") & Group == 1 ~ "PASC",
+    str_detect(Protocol, "94N") ~ "PASC",
+    str_detect(SubjectID, "map") & Group == 1 ~ "PI-ME/CFS",
+    TRUE ~ " "
+  )) %>%
+  relocate(ID, .after = Group) %>%
+   mutate(Protocol = case_when(
+    Protocol == "000051N" ~ "HV (GWI)",
+    Protocol == "000089N" ~ "PASC (89)",
+    Protocol == "000094N" ~ "PASC (94)",
+    Protocol == "16N0058" ~ "PI-ME/CFS",
+    Group == 0 & (Protocol == "03N0004" |
+    Protocol == "17N0076" | 
+    Protocol == "09N0010" | 
+    Protocol == "94N0186") ~ "HV AMS Section",
+    T ~ "PD"
+  ))  %>%
+  select(ID, SubjectID, Protocol, Group, Age:Elapsed_Infection) %>%
+  mutate(Sex = case_when(
+    Sex == 1 ~ "Female",
+    T ~ "Male"
+  )) 
+ 
+
+
+
+label(demographics$Sex) <- "Birth Sex"
+label(demographics$Age) <- "Age at Evaluation"
+units(demographics$Age) <- "years"
+units(demographics$BMI)<- "kg/m^2"
+label(demographics$Elapsed_Infection) <- "Elapsed Time Since Infection"
+units(demographics$Elapsed_Infection) <- "months"
+
+
+```
+
+
+
+```{r, echo=F}
+
+pvalue <- function(x, ...) {
+  x <- x[-length(x)]  
+  y <- unlist(x)
+  g <- factor(rep(1:length(x), times=sapply(x, length)))
+  if (is.numeric(y)) {
+    # ANOVA
+    p <- summary(aov(y ~ g))[[1]][["Pr(>F)"]][1]
+  } else {
+    # chi-squared test of independence
+    p <- chisq.test(table(y, g))$p.value
+  }
+  # Format the p-value
+  c("", sub("<", "&lt;", format.pval(p, digits=3, eps=0.0001)))
+}
+
+
+
+# table
+table1(~Age+ Race  +
+        Sex  + BMI + Elapsed_Infection
+       | ID, data = demographics, render.missing = NULL, extra.col=list(`P-value`=pvalue), extra.col.pos=5)
+
+
+
+```
+
+
+
+
+
