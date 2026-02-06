@@ -15,16 +15,15 @@ library(gt)
 options(scipen = 999) 
 
 
-path <- "/Users/aregawili/Downloads" # change path to your own directory
+file_path <- file.choose()
 
-setwd(path)
-
-data_sheets <- excel_sheets('Supplementary File 1 Indiv. Data.xlsx')
-
+data_sheets <- excel_sheets(file_path)
+ 
 sheets = lapply(setNames(data_sheets, data_sheets), 
-                function(x) read_excel('Supplementary File 1 Indiv. Data.xlsx', sheet=x))
+                function(x) read_excel(file_path, sheet=x))
 
 data <- sheets$Data
+
 
 #formatting data
 
