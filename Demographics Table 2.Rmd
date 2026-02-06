@@ -12,16 +12,13 @@ library(readxl)
 
 options(scipen = 999)
 
-path <- "/Users/aregawili/Downloads" # change path to your own directory
-  
-setwd(path)
-
 options(knitr.kable.NA = ' ')
+file_path <- file.choose()
 
- data_sheets <- excel_sheets('Supplementary File 1 Indiv. Data.xlsx')
-
+data_sheets <- excel_sheets(file_path)
+ 
 sheets = lapply(setNames(data_sheets, data_sheets), 
-                function(x) read_excel('Supplementary File 1 Indiv. Data.xlsx', sheet=x))
+                function(x) read_excel(file_path, sheet=x))
 
 demographics <- sheets$Data
 
