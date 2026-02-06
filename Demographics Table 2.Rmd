@@ -1,0 +1,82 @@
+
+
+
+```{r, include=FALSE}
+library(tidyverse)
+library(broom)
+library(knitr)
+library(modelsummary)
+library(kableExtra)
+library(table1)
+library(readxl)
+
+options(scipen = 999)
+
+path <- "/Users/aregawili/Downloads" # change path to your own directory
+  
+setwd(path)
+
+options(knitr.kable.NA = ' ')
+
+ data_sheets <- excel_sheets('Supplementary File 1 Indiv. Data.xlsx')
+
+sheets = lapply(setNames(data_sheets, data_sheets), 
+                function(x) read_excel('Supplementary File 1 Indiv. Data.xlsx', sheet=x))
+
+demographics <- sheets$Data
+
+
+demographics <- demographics %>%
+  select(Age:Elapsed_Infection) %>%
+  mutate(Sex = case_when(
+    Sex == 1 ~ "Female",
+    T ~ "Male"
+  )) 
+ 
+
+
+
+label(demographics$Sex) <- "Birth Sex"
+label(demographics$Age) <- "Age at Evaluation"
+units(demographics$Age) <- "years"
+units(demographics$BMI)<- "kg/m^2"
+label(demographics$Elapsed_Infection) <- "Elapsed Time Since Infection"
+units(demographics$Elapsed_Infection) <- "months"
+
+
+```
+
+
+
+```{r, echo=F}
+
+pvalue <- function(x, ...) {
+  x <- x[-length(x)]  
+  y <- unlist(x)
+  g <- factor(rep(1:length(x), times=sapply(x, length)))
+  if (is.numeric(y)) {
+    # ANOVA
+    p <- summary(aov(y ~ g))[[1]][["Pr(>F)"]][1]
+  } else {
+    # chi-squared test of independence
+    p <- chisq.test(table(y, g))$p.value
+  }
+  # Format the p-value
+  c("", sub("<", "&lt;", format.pval(p, digits=3, eps=0.0001)))
+}
+
+
+
+# table
+table1(~Age+ Race  +
+        Sex  + BMI + Elapsed_Infection
+       | Cohort, data = demographics, render.missing = NULL, extra.col=list(`P-value`=pvalue), extra.col.pos=5)
+
+
+
+```
+
+
+
+
+
