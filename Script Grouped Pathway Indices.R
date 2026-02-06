@@ -10,16 +10,17 @@ library(htmlTable)
 library(ggpubr)
 library(rstatix) 
 
-path <- "/Users/aregawili/Downloads" # change path to your own directory
-  
-setwd(path)
 
-data_sheets <- excel_sheets('Supplementary File 1 Indiv. Data.xlsx')
 
+file_path <- file.choose()
+
+data_sheets <- excel_sheets(file_path)
+ 
 sheets = lapply(setNames(data_sheets, data_sheets), 
-                   function(x) read_excel('Supplementary File 1 Indiv. Data.xlsx', sheet=x))
+                function(x) read_excel(file_path, sheet=x))
 
 data <- sheets$Data
+
 
 
 #formatting data, removing NA values
