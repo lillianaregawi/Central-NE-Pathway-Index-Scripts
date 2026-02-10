@@ -67,7 +67,7 @@ pvalue <- function(x, ...) {
 # table
 table1(~Age+ Race  +
         Sex  + BMI + Elapsed_Infection
-       | Cohort, data = demographics, render.missing = NULL, extra.col=list(`P-value`=pvalue), extra.col.pos=5)
+       | Cohort, data = demographics, render.missing = NULL, extra.col=list(`P`=pvalue), extra.col.pos=5)
 
 
 
