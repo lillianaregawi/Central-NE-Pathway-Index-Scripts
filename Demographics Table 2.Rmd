@@ -45,7 +45,7 @@ units(demographics$Elapsed_Infection) <- "months"
 
 
 
-```{r, echo=F}
+```{r, echo=F, warning=}
 
 pvalue <- function(x, ...) {
   x <- x[-length(x)]  
