@@ -47,8 +47,7 @@ corr <- combineddata[1:90, ] %>%
   filter(!str_detect(SubjectID, "CNCS"))%>%
   filter(Protocol != "000094N")
 
-corr <- corr[, c(1, 7, 16, 27:65, 81:95)]
-
+corr <- corr[, c(1, 7, 17, 28:66, 82:96)]
 # filter here for group:
 
 #corr_all <- corr_all %>%
